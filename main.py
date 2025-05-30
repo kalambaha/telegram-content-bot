@@ -9,14 +9,20 @@ import os, json
 API_TOKEN = '7903681133:AAHfN_MR7CH-C4Kq71ToI483_kxZFA2wARQ'
 SPREADSHEET_ID = '1AiREZQQEM9W8l5NyzN4xJI9d1bWX2TiKfupFBJgLXKg'
 CREDENTIALS_FILE = 'credentials.json'
-ADMIN_IDS = [864985873]
 
 bot = TeleBot(API_TOKEN)
 
 models = {
-    'arina': {'name': '🔥 Арина', 'chat_id': '1383698645'},
-    'kat': {'name': '🎮 Кэт', 'chat_id': '987654321'}
+    'Arina': {'name': '👠 Arina', 'chat_id': '453570257'}
+    'Alexa': {'name': '🎮 Alexa', 'chat_id': '7190220327'},
+    'Juliana': {'name': '💎 Юлия', 'chat_id': '1122334455'},
+    'Miranda': {'name': '🌙 Miranda', 'chat_id': '598161936'},
+    'Runa': {'name': '🍒 Runa', 'chat_id': '472901770'},
+    'Polina': {'name': '🌟 Polina', 'chat_id': '1103002863'},
+    'Milana': {'name': '👠 Milana', 'chat_id': '764988155'}
 }
+
+verified_users = {'1247157530', '368414650'}  # 👈 сюда добавляешь chat_id всех, кто имеет доступ
 
 user_states = {}
 request_links = {}
@@ -34,6 +40,9 @@ sheet = client.open_by_key(SPREADSHEET_ID).worksheet('Log')
 
 @bot.message_handler(commands=['start'])
 def start(message):
+    if str(message.chat.id) not in verified_users:
+        bot.send_message(message.chat.id, "❌ У тебя нет доступа к боту. Свяжись с админом.")
+        return
     keyboard = types.InlineKeyboardMarkup()
     for key, model in models.items():
         keyboard.add(types.InlineKeyboardButton(text=model['name'], callback_data=f'select_{key}'))
@@ -63,6 +72,7 @@ def select_model(call):
 def handle_request(message):
     global request_counter
     uid = str(message.from_user.id)
+    username = message.from_user.username or '—'
     state = user_states[uid]
     request_counter += 1
     request_id = f"req{request_counter}"
@@ -93,11 +103,7 @@ def handle_request(message):
         bot.send_audio(int(model_chat_id), message.audio.file_id, caption=message.caption or '', reply_markup=markup)
         content_desc.append("Аудио")
 
-    sheet.append_row([str(datetime.now()), uid, model_chat_id, 'Запрос', ' + '.join(content_desc)])
-
-    for admin_id in ADMIN_IDS:
-        bot.send_message(admin_id, f"🔔 Новый запрос от {uid} к {models[model_key]['name']}")
-
+    sheet.append_row([str(datetime.now()), uid, username, model_chat_id, 'Запрос', ' + '.join(content_desc)])
     bot.send_message(int(uid), "✅ Запрос отправлен!")
     user_states[uid] = {}
 
@@ -115,6 +121,7 @@ def reply_request(call):
 @bot.message_handler(content_types=['text', 'photo', 'video', 'document', 'voice', 'audio'], func=lambda m: user_states.get(str(m.chat.id), {}).get('step') == 'model_reply')
 def model_reply(message):
     uid = str(message.chat.id)
+    username = message.from_user.username or '—'
     state = user_states.get(uid)
     req_id = state['req_id']
     chater_id = request_links.get(req_id, {}).get('chater_id')
@@ -139,10 +146,7 @@ def model_reply(message):
         bot.send_audio(int(chater_id), message.audio.file_id, caption=message.caption or '')
         log_desc.append("Аудио")
 
-    sheet.append_row([str(datetime.now()), uid, chater_id, 'Ответ', ' + '.join(log_desc)])
-
-    for admin_id in ADMIN_IDS:
-        bot.send_message(admin_id, f"📢 Ответ от модели {uid} к {chater_id}: {' + '.join(log_desc)}")
+    sheet.append_row([str(datetime.now()), uid, username, chater_id, 'Ответ', ' + '.join(log_desc)])
 
 bot.set_my_commands([
     types.BotCommand('start', 'Начать'),
