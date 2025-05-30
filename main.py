@@ -3,6 +3,7 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
 from collections import defaultdict
+import os, json 
 
 # ⚙️ Настройки
 API_TOKEN = '7903681133:AAHfN_MR7CH-C4Kq71ToI483_kxZFA2wARQ'
@@ -24,7 +25,10 @@ media_cache = defaultdict(list)
 
 # Google Sheets
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
-creds = ServiceAccountCredentials.from_json_keyfile_name(CREDENTIALS_FILE, scope)
+creds_json = os.environ['GOOGLE_APPLICATION_CREDENTIALS_JSON']
+creds_dict = json.loads(creds_json)
+creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
+
 client = gspread.authorize(creds)
 sheet = client.open_by_key(SPREADSHEET_ID).worksheet('Log')
 
