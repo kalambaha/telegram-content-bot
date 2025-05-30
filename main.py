@@ -13,7 +13,7 @@ CREDENTIALS_FILE = 'credentials.json'
 bot = TeleBot(API_TOKEN)
 
 models = {
-    'Arina': {'name': '👠 Arina', 'chat_id': '453570257'}
+    'Arina': {'name': '👠 Arina', 'chat_id': '453570257'},
     'Alexa': {'name': '🎮 Alexa', 'chat_id': '7190220327'},
     'Juliana': {'name': '💎 Юлия', 'chat_id': '1122334455'},
     'Miranda': {'name': '🌙 Miranda', 'chat_id': '598161936'},
