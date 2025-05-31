@@ -15,7 +15,7 @@ bot = TeleBot(API_TOKEN)
 models = {
     'Arina': {'name': '👠 Arina', 'chat_id': '453570257'},
     'Alexa': {'name': '🎮 Alexa', 'chat_id': '7190220327'},
-    'Juliana': {'name': '💎 Юлия', 'chat_id': '1383698645'},
+    'Juliana': {'name': '💎 Juliana', 'chat_id': '6561798581'},
     'Miranda': {'name': '🌙 Miranda', 'chat_id': '598161936'},
     'Runa': {'name': '🍒 Runa', 'chat_id': '472901770'},
     'Polina': {'name': '🌟 Polina', 'chat_id': '1103002863'},
